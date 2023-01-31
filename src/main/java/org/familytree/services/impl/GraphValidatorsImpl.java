@@ -5,7 +5,6 @@ import org.familytree.services.GraphValidators;
 public class GraphValidatorsImpl implements GraphValidators {
   @Override
   public void validateNodeId(String nodeId) {
-    //validate for integer
     //validate whether Id present or absent
   }
 
