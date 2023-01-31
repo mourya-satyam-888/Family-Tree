@@ -3,10 +3,9 @@ package org.familytree.services.impl;
 import java.util.HashMap;
 import org.familytree.constants.ExceptionMessage;
 import org.familytree.exceptions.ValidationException;
-import org.familytree.services.NodeValidators;
+import org.familytree.services.NodeService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,12 +16,12 @@ import static org.junit.jupiter.api.Assertions.fail;
  * The type Node validators impl test.
  */
 @ExtendWith(MockitoExtension.class)
-class NodeValidatorsImplTest {
+class NodeServiceImplTest {
   /**
    * The Node validators.
    */
   @Mock
-  NodeValidators nodeValidators;
+  NodeService nodeService;
 
   /**
    * Validate node when name empty.
@@ -31,7 +30,7 @@ class NodeValidatorsImplTest {
   @Test
   void validateNodeWhenNameEmpty() {
     Exception exception = assertThrows(ValidationException.class, () ->
-        nodeValidators.validateNode("Id1", "", new HashMap<>()));
+        nodeService.validateAndCreateNode("Id1", "", new HashMap<>()));
     assertEquals(ExceptionMessage.EMPTY_NAME, exception.getMessage());
   }
 
@@ -41,7 +40,7 @@ class NodeValidatorsImplTest {
   @Test
   void validateNodeWhenIdEmpty() {
     Exception exception = assertThrows(ValidationException.class, () ->
-        nodeValidators.validateNode("", "name 1", new HashMap<>()));
+        nodeService.validateAndCreateNode("", "name 1", new HashMap<>()));
     assertEquals(ExceptionMessage.EMPTY_ID, exception.getMessage());
   }
 
@@ -51,7 +50,7 @@ class NodeValidatorsImplTest {
   @Test
   void validateNodeSuccess() {
     try {
-      nodeValidators.validateNode("id 1", "name 1", new HashMap<>());
+      nodeService.validateAndCreateNode("id 1", "name 1", new HashMap<>());
     } catch (ValidationException ex) {
       fail("No exception expected");
     }

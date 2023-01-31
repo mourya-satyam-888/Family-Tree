@@ -25,4 +25,8 @@ public class DependencyGraph {
     //this should return the node mapped to nodeId
     return null;
   }
+
+  public Boolean isNodeIdPresent(String nodeId) {
+    return nodes.containsKey(nodeId);
+  }
 }

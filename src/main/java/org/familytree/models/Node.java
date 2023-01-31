@@ -3,6 +3,7 @@ package org.familytree.models;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import lombok.Builder;
@@ -19,8 +20,8 @@ public class Node {
   @NotEmpty(message = "Name should not be empty")
   private String nodeName;
   private Map<String, String> nodeAdditionalInfo;
-  private Set<Node> parents;
-  private Set<Node> children;
+  private Set<Node> parents = new HashSet<>();
+  private Set<Node> children = new HashSet<>();
 
   public void addParentDependency(Node node) {
 

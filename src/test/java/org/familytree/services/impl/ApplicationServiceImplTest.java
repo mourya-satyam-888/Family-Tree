@@ -2,7 +2,6 @@ package org.familytree.services.impl;
 
 import org.familytree.constants.ExceptionMessage;
 import org.familytree.exceptions.NodeException;
-import org.familytree.services.GraphValidators;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -13,12 +12,12 @@ import static org.junit.jupiter.api.Assertions.*;
  * The type Graph validators impl test.
  */
 @ExtendWith(MockitoExtension.class)
-class GraphValidatorsImplTest {
+class ApplicationServiceImplTest {
   /**
    * The Graph validators.
    */
   @Mock
-  GraphValidators graphValidators;
+  ApplicationService applicationService;
 
   /**
    * Validate node id when absent.
@@ -26,7 +25,7 @@ class GraphValidatorsImplTest {
   @Test
   void validateNodeIdWhenAbsent() {
     Exception exception = assertThrows(NodeException.class,
-        () -> graphValidators.validateNodeId("node 1"));
+        () -> applicationService.validateNodeId("node 1"));
     assertEquals(ExceptionMessage.NODE_ABSENT, exception.getMessage());
   }
 
@@ -36,7 +35,7 @@ class GraphValidatorsImplTest {
   @Test
   void validateNodeIdWhenPresent() {
     try {
-      graphValidators.validateNodeId("node 2");
+      applicationService.validateNodeId("node 2");
     } catch (Exception e) {
       fail("Exception not expected");
     }
@@ -48,7 +47,7 @@ class GraphValidatorsImplTest {
   @Test
   void validateCyclicDependencyWhenPresent() {
     Exception exception = assertThrows(NodeException.class, () ->
-        graphValidators.validateCyclicDependency("node 1", "node 2"));
+        applicationService.validateCyclicDependency("node 1", "node 2"));
     assertEquals(ExceptionMessage.CYCLIC_DEPENDENCY, exception.getMessage());
   }
 
@@ -58,7 +57,7 @@ class GraphValidatorsImplTest {
   @Test
   void validateCyclicDependencyWhenAbsent() {
     try {
-      graphValidators.validateCyclicDependency("node 2", "node 1");
+      applicationService.validateCyclicDependency("node 2", "node 1");
     } catch (Exception e) {
       fail("Exception not expected");
     }
@@ -70,7 +69,7 @@ class GraphValidatorsImplTest {
   @Test
   void validateParentChildRelationshipFailure() {
     Exception exception = assertThrows(NodeException.class, () ->
-        graphValidators.validateParentChildRelationship("node 1", "node 2"));
+        applicationService.validateParentChildRelationship("node 1", "node 2"));
     assertEquals(ExceptionMessage.NO_DEPENDENCY, exception.getMessage());
   }
 
@@ -80,7 +79,7 @@ class GraphValidatorsImplTest {
   @Test
   void validateParentChildRelationshipSuccess() {
     try {
-      graphValidators.validateParentChildRelationship("node 1", "node 2");
+      applicationService.validateParentChildRelationship("node 1", "node 2");
     } catch (Exception e) {
       fail("Exception not expected");
     }
