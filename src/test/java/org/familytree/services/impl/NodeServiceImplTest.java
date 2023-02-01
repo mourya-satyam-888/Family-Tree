@@ -1,8 +1,11 @@
 package org.familytree.services.impl;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import org.familytree.constants.ExceptionMessage;
+import org.familytree.exceptions.NodeException;
 import org.familytree.exceptions.ValidationException;
+import org.familytree.models.Node;
 import org.familytree.services.NodeService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,6 +58,48 @@ class NodeServiceImplTest {
     } catch (ValidationException ex) {
       fail("No exception expected");
     }
+  }
+
+  @Test
+  void addDependencyWhenCyclic() {
+    Node parent = Node.builder().nodeId("node 1").build();
+    Node child = Node.builder().nodeId("node 2").build();
+    Exception exception = assertThrows(NodeException.class, () ->
+        nodeService.addDependency(parent, child));
+    assertEquals(ExceptionMessage.CYCLIC_DEPENDENCY, exception.getMessage());
+  }
+
+  @Test
+  void addDependencySuccess() {
+    try {
+      Node parent = Node.builder().nodeId("node 1").children(new HashSet<>()).build();
+      Node child = Node.builder().nodeId("node 2").parents(new HashSet<>()).build();
+      int childParentSizeExpected = child.getParents().size() + 1;
+      int parentChildrenSizeExpected = parent.getChildren().size() + 1;
+      nodeService.addDependency(parent, child);
+      assertEquals(childParentSizeExpected, child.getParents().size());
+      assertEquals(parentChildrenSizeExpected, parent.getChildren().size());
+    } catch (Exception e) {
+      fail("Exception not expected");
+    }
+  }
+
+  @Test
+  void isCyclicDependencyWhenPresent() {
+    Boolean expected = true;
+    Node parent = Node.builder().nodeId("node 1").build();
+    Node child = Node.builder().nodeId("node 2").build();
+    Boolean actual = nodeService.isCyclicDependency(parent, child);
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  void isCyclicDependencyWhenAbsent() {
+    Boolean expected = false;
+    Node parent = Node.builder().nodeId("node 1").build();
+    Node child = Node.builder().nodeId("node 2").build();
+    Boolean actual = nodeService.isCyclicDependency(parent, child);
+    assertEquals(expected, actual);
   }
 
 }

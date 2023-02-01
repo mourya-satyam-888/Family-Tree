@@ -6,6 +6,19 @@ import org.familytree.models.Node;
 import org.familytree.services.NodeService;
 
 public class NodeServiceImpl implements NodeService {
+  @Override
+  public Node validateAndCreateNode(String nodeId, String nodeName, HashMap<String, String> additionalInfo) {
+    //create node
+    //validateNode
+    //call addNode
+    return null;
+  }
+
+  @Override
+  public void validateNode(Node node) {
+    //validate violations
+  }
+
   public void addDependency(Node parent, Node child) {
     //check for cyclic dependency
     //parent.addChild
@@ -27,19 +40,6 @@ public class NodeServiceImpl implements NodeService {
   public Boolean isParentChildRelationShip(Node parent, Node child) {
     //check for parent child relationship
     return null;
-  }
-
-  @Override
-  public Node validateAndCreateNode(String nodeId, String nodeName, HashMap<String, String> additionalInfo) {
-    //create node
-    //validateNode
-    //call addNode
-    return null;
-  }
-
-  @Override
-  public void validateNode(Node node) {
-    //validate violations
   }
 
   @Override
