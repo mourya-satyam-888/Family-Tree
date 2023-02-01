@@ -5,13 +5,13 @@ import java.util.Map;
 
 public class DependencyGraph {
   private final Map<String, Node> nodes = new HashMap<>();
-  private final DependencyGraph INSTANCE = new DependencyGraph();
+  private static final DependencyGraph INSTANCE = new DependencyGraph();
 
   private DependencyGraph() {
     //singleton pattern
   }
 
-  public DependencyGraph getInstance() {
+  public static DependencyGraph getInstance() {
     return INSTANCE;
   }
 

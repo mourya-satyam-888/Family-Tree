@@ -2,6 +2,7 @@ package org.familytree.controllers;
 
 import java.util.HashMap;
 import java.util.Set;
+import org.familytree.models.DependencyGraph;
 import org.familytree.models.Node;
 import org.familytree.services.DependencyGraphService;
 import org.familytree.services.NodeService;
@@ -10,6 +11,12 @@ public class ApplicationController {
 
   DependencyGraphService dependencyGraphService;
   NodeService nodeService;
+
+  public ApplicationController(DependencyGraphService dependencyGraphService,
+                               NodeService nodeService) {
+    this.dependencyGraphService = dependencyGraphService;
+    this.nodeService = nodeService;
+  }
 
   public void addNewNode(String nodeId, String nodeName, HashMap<String, String> additionalInfo) {
     //nodeService createAndValidateNode

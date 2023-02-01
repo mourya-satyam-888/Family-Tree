@@ -9,6 +9,10 @@ import org.familytree.services.DependencyGraphService;
 public class DependencyGraphServiceImpl implements DependencyGraphService {
   DependencyGraph dependencyGraph;
 
+  public DependencyGraphServiceImpl(DependencyGraph dependencyGraph) {
+    this.dependencyGraph = dependencyGraph;
+  }
+
   @Override
   public void addNode(Node node) {
     //validate node id by calling isNodePresent

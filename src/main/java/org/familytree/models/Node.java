@@ -20,22 +20,6 @@ public class Node {
   @NotEmpty(message = "Name should not be empty")
   private String nodeName;
   private Map<String, String> nodeAdditionalInfo;
-  private Set<Node> parents = new HashSet<>();
-  private Set<Node> children = new HashSet<>();
-
-  public void addParentDependency(Node node) {
-
-  }
-
-  public void addChildDependency(Node node) {
-
-  }
-
-  public void removeParentDependency(Node node) {
-
-  }
-
-  public void removeChildDependency(Node node) {
-
-  }
+  private Set<Node> parents;
+  private Set<Node> children;
 }

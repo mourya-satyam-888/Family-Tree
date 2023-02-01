@@ -1,8 +1,21 @@
 package org.familytree.views;
 
+import org.familytree.controllers.ApplicationController;
+import org.familytree.models.DependencyGraph;
+import org.familytree.services.impl.DependencyGraphServiceImpl;
+import org.familytree.services.impl.NodeServiceImpl;
+
 public class Application {
+  ApplicationController applicationController;
+
   public void run() {
     //showMenu
+  }
+
+  public Application() {
+    DependencyGraph dependencyGraph = DependencyGraph.getInstance();
+    applicationController = new ApplicationController(
+        new DependencyGraphServiceImpl(dependencyGraph), new NodeServiceImpl());
   }
 
   public void showMenu() {
