@@ -1,43 +1,55 @@
 package org.familytree.services.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import org.familytree.constants.ExceptionMessage;
+import org.familytree.exceptions.NodeException;
 import org.familytree.models.DependencyGraph;
 import org.familytree.models.Node;
 import org.familytree.services.DependencyGraphService;
 
+/**
+ * The type Dependency graph service.
+ */
 public class DependencyGraphServiceImpl implements DependencyGraphService {
-  DependencyGraph dependencyGraph;
+  /**
+   * The Dependency graph.
+   */
+  private final DependencyGraph dependencyGraph;
 
-  public DependencyGraphServiceImpl(DependencyGraph dependencyGraph) {
+  /**
+   * Instantiates a new Dependency graph service.
+   *
+   * @param dependencyGraph the dependency graph
+   */
+  public DependencyGraphServiceImpl(final DependencyGraph dependencyGraph) {
     this.dependencyGraph = dependencyGraph;
   }
 
   @Override
-  public void addNode(Node node) {
-    //validate node id by calling isNodePresent
-    //if no error add node
+  public void addNewNode(final Node node) {
+    if (isNodeIdPresent(node.getNodeId())) {
+      throw new NodeException(ExceptionMessage.NODE_PRESENT);
+    }
+    dependencyGraph.addNode(node);
   }
 
   @Override
-  public Boolean isNodeIdPresent(String nodeId) {
-    return null;
+  public Boolean isNodeIdPresent(final String nodeId) {
+    return dependencyGraph.isNodeIdPresent(nodeId);
   }
 
   @Override
-  public void deleteNode(String nodeId) {
-    //validate and delete node
+  public void deleteNode(final String nodeId) {
+    if (!isNodeIdPresent(nodeId)) {
+      throw new NodeException(ExceptionMessage.NODE_ABSENT);
+    }
+    dependencyGraph.deleteNode(nodeId);
   }
 
   @Override
-  public Node getNodeById(String nodeId) {
-    //validate nodeId by is node present
-    //call getNodeById
-    return null;
-  }
-
-  @Override
-  public void deleteDependency(String parentId, String childId) {
-
+  public Node getNodeById(final String nodeId) {
+    if (!isNodeIdPresent(nodeId)) {
+      throw new NodeException(ExceptionMessage.NODE_ABSENT);
+    }
+    return dependencyGraph.getNodeById(nodeId);
   }
 }

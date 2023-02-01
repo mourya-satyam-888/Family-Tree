@@ -6,7 +6,7 @@ import org.familytree.services.impl.DependencyGraphServiceImpl;
 import org.familytree.services.impl.NodeServiceImpl;
 
 public class Application {
-  ApplicationController applicationController;
+  private final ApplicationController applicationController;
 
   public void run() {
     //showMenu

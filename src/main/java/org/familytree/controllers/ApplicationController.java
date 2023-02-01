@@ -1,64 +1,121 @@
 package org.familytree.controllers;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
-import org.familytree.models.DependencyGraph;
 import org.familytree.models.Node;
 import org.familytree.services.DependencyGraphService;
 import org.familytree.services.NodeService;
 
+/**
+ * The type Application controller.
+ */
 public class ApplicationController {
 
-  DependencyGraphService dependencyGraphService;
-  NodeService nodeService;
+  /**
+   * The Dependency graph service.
+   */
+  private final DependencyGraphService dependencyGraphService;
+  /**
+   * The Node service.
+   */
+  private final NodeService nodeService;
 
-  public ApplicationController(DependencyGraphService dependencyGraphService,
-                               NodeService nodeService) {
+  /**
+   * Instantiates a new Application controller.
+   *
+   * @param dependencyGraphService the dependency graph service
+   * @param nodeService            the node service
+   */
+  public ApplicationController(final DependencyGraphService dependencyGraphService,
+                               final NodeService nodeService) {
     this.dependencyGraphService = dependencyGraphService;
     this.nodeService = nodeService;
   }
 
-  public void addNewNode(String nodeId, String nodeName, HashMap<String, String> additionalInfo) {
-    //nodeService createAndValidateNode
-    //dependencyGraphService addNode
+  /**
+   * Add new node.
+   *
+   * @param nodeId         the node id
+   * @param nodeName       the node name
+   * @param additionalInfo the additional info
+   */
+  public void addNewNode(final String nodeId, final String nodeName,
+                         final Map<String, String> additionalInfo) {
+    dependencyGraphService.addNewNode(nodeService.validateAndCreateNode(
+        nodeId, nodeName, additionalInfo));
   }
 
-  public void deleteNode(String nodeId) {
-    //dependencyGraphService deleteNode
+  /**
+   * Delete node.
+   *
+   * @param nodeId the node id
+   */
+  public void deleteNode(final String nodeId) {
+    nodeService.deleteNodeAndAllDependency(dependencyGraphService.getNodeById(nodeId));
+    dependencyGraphService.deleteNode(nodeId);
   }
 
-  public void addNewDependency(String parentId, String childId) {
-    //dependencyGraphService getNodeById for parentId and childId
-    //Node service add Dependency
+  /**
+   * Add new dependency.
+   *
+   * @param parentId the parent id
+   * @param childId  the child id
+   */
+  public void addNewDependency(final String parentId, final String childId) {
+    final Node parent = dependencyGraphService.getNodeById(parentId);
+    final Node child = dependencyGraphService.getNodeById(childId);
+    nodeService.addDependency(parent, child);
   }
 
-  public void deleteDependency(String parentId, String childId) {
-    //dependencyGraphService getNodeById for parentId and childId
-    //delete dependency
+  /**
+   * Delete dependency.
+   *
+   * @param parentId the parent id
+   * @param childId  the child id
+   */
+  public void deleteDependency(final String parentId, final String childId) {
+    final Node parent = dependencyGraphService.getNodeById(parentId);
+    final Node child = dependencyGraphService.getNodeById(childId);
+    nodeService.deleteDependency(parent, child);
   }
 
-  public Set<Node> getParents(String childId) {
-    //validate and get node
-    //just redirect to Node Services
-    return null;
+  /**
+   * Gets parents.
+   *
+   * @param childId the child id
+   * @return the parents
+   */
+  public Set<Node> getParents(final String childId) {
+    return nodeService.getParents(dependencyGraphService.getNodeById(childId));
   }
 
-  public Set<Node> getChildren(String parentId) {
-    //validate and get node
-    //just redirect
-    return null;
+  /**
+   * Gets children.
+   *
+   * @param parentId the parent id
+   * @return the children
+   */
+  public Set<Node> getChildren(final String parentId) {
+    return nodeService.getChildren(dependencyGraphService.getNodeById(parentId));
   }
 
-  public Set<Node> getAncestors(String childId) {
-    //validate and getNode
-    //just redirect
-    return null;
+  /**
+   * Gets ancestors.
+   *
+   * @param childId the child id
+   * @return the ancestors
+   */
+  public Set<Node> getAncestors(final String childId) {
+    return nodeService.getAncestors(dependencyGraphService.getNodeById(childId));
   }
 
-  public Set<Node> getDescendants(String parentId) {
-    //validate and getNode
-    //just redirect
-    return null;
+  /**
+   * Gets descendants.
+   *
+   * @param parentId the parent id
+   * @return the descendants
+   */
+  public Set<Node> getDescendants(final String parentId) {
+    return nodeService.getDescendants(dependencyGraphService.getNodeById(parentId));
   }
-
 }
