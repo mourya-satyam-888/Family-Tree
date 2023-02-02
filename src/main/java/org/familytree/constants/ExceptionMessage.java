@@ -16,6 +16,9 @@ public class ExceptionMessage {
    * The constant NODE_ABSENT.
    */
   public static final String NODE_ABSENT = "Node id do not exist";
+  /**
+   * The constant NODE_PRESENT.
+   */
   public static final String NODE_PRESENT = "Node id already exist";
   /**
    * The constant CYCLIC_DEPENDENCY.

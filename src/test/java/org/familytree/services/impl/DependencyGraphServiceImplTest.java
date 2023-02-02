@@ -1,91 +1,132 @@
 package org.familytree.services.impl;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.familytree.constants.ExceptionMessage;
-import org.familytree.exceptions.NodeException;
-import org.familytree.models.DependencyGraph;
+import org.familytree.exceptions.DependencyGraphException;
 import org.familytree.models.Node;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
-
 @ExtendWith(MockitoExtension.class)
-class DependencyGraphServiceImplTest {
-
+public class DependencyGraphServiceImplTest {
   @InjectMocks
   DependencyGraphServiceImpl dependencyGraphService;
-  @Mock
-  DependencyGraph dependencyGraph;
+  /**
+   * The Nodes.
+   */
+  List<Node> nodes;
 
-  @Test
-  void addNodeWhenIdPresent() {
-    Node node = Node.builder().nodeId("node 1").build();
-    Mockito.when(dependencyGraph.isNodeIdPresent(Mockito.anyString())).thenReturn(true);
-    Exception exception = assertThrows(NodeException.class,
-        () -> dependencyGraphService.addNewNode(node));
-    assertEquals(ExceptionMessage.NODE_PRESENT, exception.getMessage());
-    Mockito.verify(dependencyGraph).isNodeIdPresent(Mockito.anyString());
+  @BeforeEach
+  void init() {
+    //graph be like 1->2->3 and 4 alone
+    Node node4 = Node.builder().nodeId("node4")
+        .parents(new HashSet<>()).children(new HashSet<>()).build();
+    Node node3 = Node.builder().nodeId("node3")
+        .parents(new HashSet<>()).children(new HashSet<>()).build();
+    Node node2 = Node.builder().nodeId("node2")
+        .parents(new HashSet<>()).children(new HashSet<>(Arrays.asList(node3))).build();
+    Node node1 = Node.builder().nodeId("node1")
+        .parents(new HashSet<>()).children(new HashSet<>(Arrays.asList(node2))).build();
+    node3.getParents().add(node2);
+    node2.getParents().add(node1);
+    nodes = Arrays.asList(node1, node2, node3, node4);
   }
 
+  /**
+   * Add dependency when cyclic.
+   */
   @Test
-  void addNodeWhenIdAbsent() {
+  void addDependencyWhenCyclic() {
+    Node parent = nodes.get(2);
+    Node child = nodes.get(0);
+    Exception exception = assertThrows(DependencyGraphException.class, () ->
+        dependencyGraphService.addDependency(parent, child));
+    assertEquals(ExceptionMessage.CYCLIC_DEPENDENCY, exception.getMessage());
+  }
+
+
+  /**
+   * Add dependency success.
+   */
+  @Test
+  void addDependencySuccess() {
     try {
-      Node node = Node.builder().nodeId("node 1").build();
-      Mockito.when(dependencyGraph.isNodeIdPresent(Mockito.anyString())).thenReturn(false);
-      dependencyGraphService.addNewNode(node);
-      Mockito.verify(dependencyGraph).isNodeIdPresent(Mockito.anyString());
+      Node parent = nodes.get(2);
+      Node child = nodes.get(3);
+      int childParentSizeExpected = child.getParents().size() + 1;
+      int parentChildrenSizeExpected = parent.getChildren().size() + 1;
+      dependencyGraphService.addDependency(parent, child);
+      assertEquals(childParentSizeExpected, child.getParents().size());
+      assertEquals(parentChildrenSizeExpected, parent.getChildren().size());
     } catch (Exception e) {
       fail("Exception not expected");
     }
   }
 
+  /**
+   * Delete dependency when present.
+   */
   @Test
-  void deleteNodeWhenAbsent() {
-    Mockito.when(dependencyGraph.isNodeIdPresent(Mockito.anyString())).thenReturn(false);
-    Exception exception = assertThrows(NodeException.class,
-        () -> dependencyGraphService.deleteNode("node 1"));
-    assertEquals(ExceptionMessage.NODE_ABSENT, exception.getMessage());
-    Mockito.verify(dependencyGraph).isNodeIdPresent(Mockito.anyString());
+  void deleteDependencyWhenAbsent() {
+    Node parent = nodes.get(2);
+    Node child = nodes.get(3);
+    Exception exception = assertThrows(DependencyGraphException.class,
+        () -> dependencyGraphService.deleteDependency(parent, child));
+    assertEquals(ExceptionMessage.NO_DEPENDENCY, exception.getMessage());
   }
 
+  /**
+   * Delete dependency when absent.
+   */
   @Test
-  void deleteNodeWhenPresent() {
+  void deleteDependencyWhenPresent() {
+    Node parent = nodes.get(1);
+    Node child = nodes.get(2);
     try {
-      Mockito.when(dependencyGraph.isNodeIdPresent(Mockito.anyString())).thenReturn(true);
-      dependencyGraphService.deleteNode("node 1");
-      Mockito.verify(dependencyGraph).isNodeIdPresent(Mockito.anyString());
-
+      dependencyGraphService.deleteDependency(parent, child);
     } catch (Exception e) {
       fail("Exception not expected");
     }
   }
 
+  /**
+   * Gets ancestors.
+   */
   @Test
-  void getNodeByIdWhenAbsent() {
-    Mockito.when(dependencyGraph.isNodeIdPresent(Mockito.anyString())).thenReturn(false);
-    Exception exception = assertThrows(NodeException.class,
-        () -> dependencyGraphService.getNodeById("node 1"));
-    assertEquals(ExceptionMessage.NODE_ABSENT, exception.getMessage());
-    Mockito.verify(dependencyGraph).isNodeIdPresent(Mockito.anyString());
+  void getAncestors() {
+    Set<Node> ancestors = new HashSet<>(Arrays.asList(nodes.get(0), nodes.get(1)));
+    Node node3 = nodes.get(2);
+    assertEquals(ancestors, dependencyGraphService.getAncestors(node3));
   }
 
+  /**
+   * Gets descendants.
+   */
   @Test
-  void getNodeByIdWhenPresent() {
-    try {
-      Mockito.when(dependencyGraph.isNodeIdPresent(Mockito.anyString())).thenReturn(true);
-      Mockito.when(dependencyGraph.getNodeById(Mockito.anyString()))
-          .thenReturn(Node.builder().build());
-      dependencyGraphService.getNodeById("node 1");
-      Mockito.verify(dependencyGraph).isNodeIdPresent(Mockito.anyString());
-      Mockito.verify(dependencyGraph).getNodeById(Mockito.anyString());
-    } catch (Exception e) {
-      fail("Exception not expected");
-    }
+  void getDescendants() {
+    Set<Node> descendants = new HashSet<>(Arrays.asList(nodes.get(1), nodes.get(2)));
+    Node node1 = nodes.get(0);
+    assertEquals(descendants, dependencyGraphService.getDescendants(node1));
   }
+
+  /**
+   * Delete node and all dependency.
+   */
+  @Test
+  void deleteNodeAndAllDependency() {
+    Node node2 = nodes.get(1);
+    dependencyGraphService.deleteAllDependency(node2);
+    assertEquals(0, nodes.get(0).getChildren().size());
+    assertEquals(0, nodes.get(2).getParents().size());
+  }
+
 }

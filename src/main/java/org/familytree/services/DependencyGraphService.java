@@ -1,5 +1,6 @@
 package org.familytree.services;
 
+import java.util.Set;
 import org.familytree.models.Node;
 
 /**
@@ -7,32 +8,77 @@ import org.familytree.models.Node;
  */
 public interface DependencyGraphService {
   /**
-   * Add node.
+   * Add dependency.
+   *
+   * @param parent the parent
+   * @param child  the child
+   */
+  void addDependency(Node parent, Node child);
+
+  /**
+   * Delete dependency.
+   *
+   * @param parent the parent
+   * @param child  the child
+   */
+  void deleteDependency(Node parent, Node child);
+
+  /**
+   * Delete all dependency.
    *
    * @param node the node
    */
-  void addNewNode(Node node);
+  void deleteAllDependency(Node node);
 
   /**
-   * Is node id present boolean.
+   * Is parent child relation ship boolean.
    *
-   * @param nodeId the node id
+   * @param parent the parent
+   * @param child  the child
    * @return the boolean
    */
-  Boolean isNodeIdPresent(String nodeId);
+  Boolean isParentChildRelationShip(Node parent, Node child);
 
   /**
-   * Delete node.
+   * Is cyclic dependency boolean.
    *
-   * @param nodeId the node id
+   * @param parent the parent
+   * @param child  the child
+   * @return the boolean
    */
-  void deleteNode(String nodeId);
+  Boolean isCyclicDependency(Node parent, Node child);
 
   /**
-   * Gets node by id.
+   * Gets ancestors.
    *
-   * @param nodeId the node id
-   * @return the node by id
+   * @param child the child
+   * @return the ancestors
    */
-  Node getNodeById(String nodeId);
+  Set<Node> getAncestors(Node child);
+
+  /**
+   * Gets descendants.
+   *
+   * @param parent the parent
+   * @return the descendants
+   */
+  Set<Node> getDescendants(Node parent);
+
+  /**
+   * Gets ancestors util.
+   *
+   * @param child   the child
+   * @param visited the visited
+   * @return the ancestors util
+   */
+  Set<Node> getAncestorsUtil(Node child, Set<Node> visited);
+
+  /**
+   * Gets descendants util.
+   *
+   * @param parent  the parent
+   * @param visited the visited
+   * @return the descendants util
+   */
+  Set<Node> getDescendantsUtil(Node parent, Set<Node> visited);
 }

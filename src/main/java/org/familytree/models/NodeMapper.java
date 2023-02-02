@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * The type Dependency graph.
  */
-public final class DependencyGraph {
+public final class NodeMapper {
   /**
    * The Nodes.
    */
@@ -14,12 +14,12 @@ public final class DependencyGraph {
   /**
    * The constant INSTANCE.
    */
-  private static final DependencyGraph INSTANCE = new DependencyGraph();
+  private static final NodeMapper INSTANCE = new NodeMapper();
 
   /**
    * Instantiates a new Dependency graph.
    */
-  private DependencyGraph() {
+  private NodeMapper() {
     //singleton pattern
   }
 
@@ -28,7 +28,7 @@ public final class DependencyGraph {
    *
    * @return the instance
    */
-  public static DependencyGraph getInstance() {
+  public static NodeMapper getInstance() {
     return INSTANCE;
   }
 

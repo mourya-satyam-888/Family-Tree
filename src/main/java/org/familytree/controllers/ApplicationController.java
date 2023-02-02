@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Set;
 import org.familytree.models.Node;
 import org.familytree.services.DependencyGraphService;
+import org.familytree.services.NodeMapperService;
 import org.familytree.services.NodeService;
 
 /**
@@ -12,24 +13,30 @@ import org.familytree.services.NodeService;
 public class ApplicationController {
 
   /**
-   * The Dependency graph service.
+   * The Node mapper service.
    */
-  private final DependencyGraphService dependencyGraphService;
+  private final NodeMapperService nodeMapperService;
   /**
    * The Node service.
    */
   private final NodeService nodeService;
+  /**
+   * The Dependency graph service.
+   */
+  private final DependencyGraphService dependencyGraphService;
 
   /**
    * Instantiates a new Application controller.
    *
-   * @param dependencyGraphService the dependency graph service
-   * @param nodeService            the node service
+   * @param nodeMapperService the node mapper service
+   * @param nodeService       the node service
    */
-  public ApplicationController(final DependencyGraphService dependencyGraphService,
-                               final NodeService nodeService) {
-    this.dependencyGraphService = dependencyGraphService;
+  public ApplicationController(final NodeMapperService nodeMapperService,
+                               final NodeService nodeService,
+                               final DependencyGraphService dependencyGraphService) {
+    this.nodeMapperService = nodeMapperService;
     this.nodeService = nodeService;
+    this.dependencyGraphService = dependencyGraphService;
   }
 
   /**
@@ -41,7 +48,7 @@ public class ApplicationController {
    */
   public void addNewNode(final String nodeId, final String nodeName,
                          final Map<String, String> additionalInfo) {
-    dependencyGraphService.addNewNode(nodeService.validateAndCreateNode(
+    nodeMapperService.addNode(nodeService.validateAndCreateNode(
         nodeId, nodeName, additionalInfo));
   }
 
@@ -51,8 +58,8 @@ public class ApplicationController {
    * @param nodeId the node id
    */
   public void deleteNode(final String nodeId) {
-    nodeService.deleteNodeAndAllDependency(dependencyGraphService.getNodeById(nodeId));
-    dependencyGraphService.deleteNode(nodeId);
+    dependencyGraphService.deleteAllDependency(nodeMapperService.getNodeById(nodeId));
+    nodeMapperService.deleteNode(nodeId);
   }
 
   /**
@@ -61,10 +68,10 @@ public class ApplicationController {
    * @param parentId the parent id
    * @param childId  the child id
    */
-  public void addNewDependency(final String parentId, final String childId) {
-    final Node parent = dependencyGraphService.getNodeById(parentId);
-    final Node child = dependencyGraphService.getNodeById(childId);
-    nodeService.addDependency(parent, child);
+  public void addDependency(final String parentId, final String childId) {
+    final Node parent = nodeMapperService.getNodeById(parentId);
+    final Node child = nodeMapperService.getNodeById(childId);
+    dependencyGraphService.addDependency(parent, child);
   }
 
   /**
@@ -74,9 +81,9 @@ public class ApplicationController {
    * @param childId  the child id
    */
   public void deleteDependency(final String parentId, final String childId) {
-    final Node parent = dependencyGraphService.getNodeById(parentId);
-    final Node child = dependencyGraphService.getNodeById(childId);
-    nodeService.deleteDependency(parent, child);
+    final Node parent = nodeMapperService.getNodeById(parentId);
+    final Node child = nodeMapperService.getNodeById(childId);
+    dependencyGraphService.deleteDependency(parent, child);
   }
 
   /**
@@ -86,7 +93,7 @@ public class ApplicationController {
    * @return the parents
    */
   public Set<Node> getParents(final String childId) {
-    return nodeService.getParents(dependencyGraphService.getNodeById(childId));
+    return nodeService.getParents(nodeMapperService.getNodeById(childId));
   }
 
   /**
@@ -96,7 +103,7 @@ public class ApplicationController {
    * @return the children
    */
   public Set<Node> getChildren(final String parentId) {
-    return nodeService.getChildren(dependencyGraphService.getNodeById(parentId));
+    return nodeService.getChildren(nodeMapperService.getNodeById(parentId));
   }
 
   /**
@@ -106,7 +113,7 @@ public class ApplicationController {
    * @return the ancestors
    */
   public Set<Node> getAncestors(final String childId) {
-    return nodeService.getAncestors(dependencyGraphService.getNodeById(childId));
+    return dependencyGraphService.getAncestors(nodeMapperService.getNodeById(childId));
   }
 
   /**
@@ -116,6 +123,6 @@ public class ApplicationController {
    * @return the descendants
    */
   public Set<Node> getDescendants(final String parentId) {
-    return nodeService.getDescendants(dependencyGraphService.getNodeById(parentId));
+    return dependencyGraphService.getDescendants(nodeMapperService.getNodeById(parentId));
   }
 }

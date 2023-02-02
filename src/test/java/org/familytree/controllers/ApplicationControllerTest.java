@@ -6,10 +6,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.familytree.constants.ExceptionMessage;
-import org.familytree.exceptions.NodeException;
+import org.familytree.exceptions.DependencyGraphException;
 import org.familytree.exceptions.ValidationException;
 import org.familytree.models.Node;
 import org.familytree.services.DependencyGraphService;
+import org.familytree.services.NodeMapperService;
 import org.familytree.services.NodeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,8 @@ class ApplicationControllerTest {
   ApplicationController applicationController;
   @Mock
   NodeService nodeService;
+  @Mock
+  NodeMapperService nodeMapperService;
   @Mock
   DependencyGraphService dependencyGraphService;
   List<Node> nodes;
@@ -74,14 +77,14 @@ class ApplicationControllerTest {
   void addNewNodeWhenPresent() {
     Mockito.when(nodeService.validateAndCreateNode(Mockito.anyString(),
         Mockito.anyString(), Mockito.anyMap())).thenReturn(Node.builder().build());
-    Mockito.doThrow(new NodeException(ExceptionMessage.NODE_PRESENT))
-        .when(dependencyGraphService).addNewNode(Mockito.any());
-    Exception exception = assertThrows(NodeException.class, () ->
+    Mockito.doThrow(new DependencyGraphException(ExceptionMessage.NODE_PRESENT))
+        .when(nodeMapperService).addNode(Mockito.any());
+    Exception exception = assertThrows(DependencyGraphException.class, () ->
         applicationController.addNewNode("node 1", "", new HashMap<>()));
     assertEquals(ExceptionMessage.NODE_PRESENT, exception.getMessage());
     Mockito.verify(nodeService).validateAndCreateNode(Mockito.anyString(),
         Mockito.anyString(), Mockito.anyMap());
-    Mockito.verify(dependencyGraphService).addNewNode(Mockito.any());
+    Mockito.verify(nodeMapperService).addNode(Mockito.any());
   }
 
   @Test
@@ -89,136 +92,136 @@ class ApplicationControllerTest {
     Mockito.when(nodeService.validateAndCreateNode(Mockito.anyString(),
         Mockito.anyString(), Mockito.anyMap())).thenReturn(Node.builder().build());
     Mockito.doNothing()
-        .when(dependencyGraphService).addNewNode(Mockito.any());
+        .when(nodeMapperService).addNode(Mockito.any());
     applicationController.addNewNode("node 1", "", new HashMap<>());
     Mockito.verify(nodeService).validateAndCreateNode(Mockito.anyString(),
         Mockito.anyString(), Mockito.anyMap());
-    Mockito.verify(dependencyGraphService).addNewNode(Mockito.any());
+    Mockito.verify(nodeMapperService).addNode(Mockito.any());
   }
 
   @Test
   void deleteNodeWhenAbsent() {
-    Mockito.when(dependencyGraphService.getNodeById(Mockito.anyString())).thenThrow(
-        new NodeException(ExceptionMessage.NODE_ABSENT));
-    Exception exception = assertThrows(NodeException.class,
+    Mockito.when(nodeMapperService.getNodeById(Mockito.anyString())).thenThrow(
+        new DependencyGraphException(ExceptionMessage.NODE_ABSENT));
+    Exception exception = assertThrows(DependencyGraphException.class,
         () -> applicationController.deleteNode("node 1"));
     assertEquals(ExceptionMessage.NODE_ABSENT, exception.getMessage());
   }
 
   @Test
   void deleteNodeWhenPresent() {
-    Mockito.when(dependencyGraphService.getNodeById(Mockito.anyString()))
+    Mockito.when(nodeMapperService.getNodeById(Mockito.anyString()))
         .thenReturn(Node.builder().build());
-    Mockito.doNothing().when(nodeService).deleteNodeAndAllDependency(Mockito.any());
-    Mockito.doNothing().when(dependencyGraphService).deleteNode(Mockito.anyString());
+    Mockito.doNothing().when(dependencyGraphService).deleteAllDependency(Mockito.any());
+    Mockito.doNothing().when(nodeMapperService).deleteNode(Mockito.anyString());
     try {
       applicationController.deleteNode("node 1");
     } catch (Exception e) {
       fail("Exception not expected");
     }
-    Mockito.verify(dependencyGraphService).getNodeById(Mockito.anyString());
-    Mockito.verify(nodeService).deleteNodeAndAllDependency(Mockito.any());
-    Mockito.verify(dependencyGraphService).deleteNode(Mockito.anyString());
+    Mockito.verify(nodeMapperService).getNodeById(Mockito.anyString());
+    Mockito.verify(dependencyGraphService).deleteAllDependency(Mockito.any());
+    Mockito.verify(nodeMapperService).deleteNode(Mockito.anyString());
   }
 
   @Test
   void addNewDependencyWhenCyclic() {
-    Mockito.when(dependencyGraphService.getNodeById(Mockito.anyString()))
+    Mockito.when(nodeMapperService.getNodeById(Mockito.anyString()))
         .thenReturn(Node.builder().build());
-    Mockito.doThrow(new NodeException(ExceptionMessage.CYCLIC_DEPENDENCY))
-        .when(nodeService).addDependency(Mockito.any(), Mockito.any());
-    Exception exception = assertThrows(NodeException.class, () ->
-        applicationController.addNewDependency("node 1", "node 2"));
+    Mockito.doThrow(new DependencyGraphException(ExceptionMessage.CYCLIC_DEPENDENCY))
+        .when(dependencyGraphService).addDependency(Mockito.any(), Mockito.any());
+    Exception exception = assertThrows(DependencyGraphException.class, () ->
+        applicationController.addDependency("node 1", "node 2"));
     assertEquals(ExceptionMessage.CYCLIC_DEPENDENCY, exception.getMessage());
-    Mockito.verify(dependencyGraphService, Mockito.times(2)).getNodeById(Mockito.anyString());
-    Mockito.verify(nodeService).addDependency(Mockito.any(), Mockito.any());
+    Mockito.verify(nodeMapperService, Mockito.times(2)).getNodeById(Mockito.anyString());
+    Mockito.verify(dependencyGraphService).addDependency(Mockito.any(), Mockito.any());
   }
 
   @Test
   void addNewDependencySuccess() {
-    Mockito.when(dependencyGraphService.getNodeById(Mockito.anyString()))
+    Mockito.when(nodeMapperService.getNodeById(Mockito.anyString()))
         .thenReturn(Node.builder().build());
-    Mockito.doNothing().when(nodeService).addDependency(Mockito.any(), Mockito.any());
+    Mockito.doNothing().when(dependencyGraphService).addDependency(Mockito.any(), Mockito.any());
     try {
-      applicationController.addNewDependency("node 1", "node 2");
+      applicationController.addDependency("node 1", "node 2");
     } catch (Exception e) {
       fail("Exception not expected");
     }
-    Mockito.verify(dependencyGraphService, Mockito.times(2)).getNodeById(Mockito.anyString());
-    Mockito.verify(nodeService).addDependency(Mockito.any(), Mockito.any());
+    Mockito.verify(nodeMapperService, Mockito.times(2)).getNodeById(Mockito.anyString());
+    Mockito.verify(dependencyGraphService).addDependency(Mockito.any(), Mockito.any());
   }
 
   @Test
   void deleteDependencyWhenAbsent() {
-    Mockito.when(dependencyGraphService.getNodeById(Mockito.anyString()))
+    Mockito.when(nodeMapperService.getNodeById(Mockito.anyString()))
         .thenReturn(Node.builder().build());
-    Mockito.doThrow(new NodeException(ExceptionMessage.NO_DEPENDENCY)).when(nodeService)
+    Mockito.doThrow(new DependencyGraphException(ExceptionMessage.NO_DEPENDENCY)).when(dependencyGraphService)
         .deleteDependency(Mockito.any(), Mockito.any());
-    Exception exception = assertThrows(NodeException.class, () ->
+    Exception exception = assertThrows(DependencyGraphException.class, () ->
         applicationController.deleteDependency("node 1", "node 2"));
     assertEquals(ExceptionMessage.NO_DEPENDENCY, exception.getMessage());
-    Mockito.verify(dependencyGraphService, Mockito.times(2))
+    Mockito.verify(nodeMapperService, Mockito.times(2))
         .getNodeById(Mockito.anyString());
-    Mockito.verify(nodeService).deleteDependency(Mockito.any(), Mockito.any());
+    Mockito.verify(dependencyGraphService).deleteDependency(Mockito.any(), Mockito.any());
   }
 
   @Test
   void deleteDependencyWhenPresent() {
-    Mockito.when(dependencyGraphService.getNodeById(Mockito.anyString()))
+    Mockito.when(nodeMapperService.getNodeById(Mockito.anyString()))
         .thenReturn(Node.builder().build());
-    Mockito.doNothing().when(nodeService)
+    Mockito.doNothing().when(dependencyGraphService)
         .deleteDependency(Mockito.any(), Mockito.any());
     try {
       applicationController.deleteDependency("node 1", "node 2");
     } catch (Exception e) {
       fail("Exception not expected");
     }
-    Mockito.verify(dependencyGraphService, Mockito.times(2))
+    Mockito.verify(nodeMapperService, Mockito.times(2))
         .getNodeById(Mockito.anyString());
-    Mockito.verify(nodeService).deleteDependency(Mockito.any(), Mockito.any());
+    Mockito.verify(dependencyGraphService).deleteDependency(Mockito.any(), Mockito.any());
   }
 
   @Test
   void getParents() {
     Set<Node> parents = new HashSet<>(Arrays.asList(nodes.get(1)));
-    Mockito.when(dependencyGraphService.getNodeById(Mockito.anyString()))
+    Mockito.when(nodeMapperService.getNodeById(Mockito.anyString()))
         .thenReturn(nodes.get(2));
     Mockito.when(nodeService.getParents(Mockito.any())).thenReturn(parents);
     assertEquals(parents, applicationController.getParents("node 3"));
-    Mockito.verify(dependencyGraphService).getNodeById(Mockito.anyString());
+    Mockito.verify(nodeMapperService).getNodeById(Mockito.anyString());
     Mockito.verify(nodeService).getParents(Mockito.any());
   }
 
   @Test
   void getChildren() {
     Set<Node> children = new HashSet<>(Arrays.asList(nodes.get(2)));
-    Mockito.when(dependencyGraphService.getNodeById(Mockito.anyString()))
+    Mockito.when(nodeMapperService.getNodeById(Mockito.anyString()))
         .thenReturn(nodes.get(1));
     Mockito.when(nodeService.getChildren(Mockito.any())).thenReturn(children);
     assertEquals(children, applicationController.getChildren("node 2"));
-    Mockito.verify(dependencyGraphService).getNodeById(Mockito.anyString());
+    Mockito.verify(nodeMapperService).getNodeById(Mockito.anyString());
     Mockito.verify(nodeService).getChildren(Mockito.any());
   }
 
   @Test
   void getAncestors() {
     Set<Node> ancestors = new HashSet<>(Arrays.asList(nodes.get(1), nodes.get(0)));
-    Mockito.when(dependencyGraphService.getNodeById(Mockito.anyString()))
+    Mockito.when(nodeMapperService.getNodeById(Mockito.anyString()))
         .thenReturn(nodes.get(2));
-    Mockito.when(nodeService.getAncestors(Mockito.any())).thenReturn(ancestors);
+    Mockito.when(dependencyGraphService.getAncestors(Mockito.any())).thenReturn(ancestors);
     assertEquals(ancestors, applicationController.getAncestors("node 3"));
-    Mockito.verify(dependencyGraphService).getNodeById(Mockito.anyString());
-    Mockito.verify(nodeService).getAncestors(Mockito.any());
+    Mockito.verify(nodeMapperService).getNodeById(Mockito.anyString());
+    Mockito.verify(dependencyGraphService).getAncestors(Mockito.any());
   }
 
   @Test
   void getDescendants() {
     Set<Node> descendants = new HashSet<>(Arrays.asList(nodes.get(1), nodes.get(2)));
-    Mockito.when(dependencyGraphService.getNodeById(Mockito.anyString()))
+    Mockito.when(nodeMapperService.getNodeById(Mockito.anyString()))
         .thenReturn(nodes.get(0));
-    Mockito.when(nodeService.getDescendants(Mockito.any())).thenReturn(descendants);
+    Mockito.when(dependencyGraphService.getDescendants(Mockito.any())).thenReturn(descendants);
     assertEquals(descendants, applicationController.getDescendants("node 3"));
-    Mockito.verify(dependencyGraphService).getNodeById(Mockito.anyString());
-    Mockito.verify(nodeService).getDescendants(Mockito.any());
+    Mockito.verify(nodeMapperService).getNodeById(Mockito.anyString());
+    Mockito.verify(dependencyGraphService).getDescendants(Mockito.any());
   }
 }

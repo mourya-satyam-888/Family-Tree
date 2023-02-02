@@ -6,12 +6,14 @@ import java.util.Set;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * The type Node.
  */
 @Getter
 @Setter
+@ToString
 @Builder
 public class Node {
   /**
@@ -27,13 +29,16 @@ public class Node {
   /**
    * The Node additional info.
    */
+  @ToString.Exclude
   private Map<String, String> nodeAdditionalInfo;
   /**
    * The Parents.
    */
+  @ToString.Exclude
   private Set<Node> parents;
   /**
    * The Children.
    */
+  @ToString.Exclude
   private Set<Node> children;
 }
