@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.familytree.constants.ExceptionMessage;
+import org.familytree.constants.ExceptionMessageConstants;
 import org.familytree.exceptions.DependencyGraphException;
 import org.familytree.models.Node;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,7 +50,7 @@ public class DependencyGraphServiceImplTest {
     Node child = nodes.get(0);
     Exception exception = assertThrows(DependencyGraphException.class, () ->
         dependencyGraphService.addDependency(parent, child));
-    assertEquals(ExceptionMessage.CYCLIC_DEPENDENCY, exception.getMessage());
+    assertEquals(ExceptionMessageConstants.CYCLIC_DEPENDENCY, exception.getMessage());
   }
 
 
@@ -81,7 +81,7 @@ public class DependencyGraphServiceImplTest {
     Node child = nodes.get(3);
     Exception exception = assertThrows(DependencyGraphException.class,
         () -> dependencyGraphService.deleteDependency(parent, child));
-    assertEquals(ExceptionMessage.NO_DEPENDENCY, exception.getMessage());
+    assertEquals(ExceptionMessageConstants.NO_DEPENDENCY, exception.getMessage());
   }
 
   /**

@@ -2,7 +2,7 @@ package org.familytree.services.impl;
 
 import java.util.HashSet;
 import java.util.Set;
-import org.familytree.constants.ExceptionMessage;
+import org.familytree.constants.ExceptionMessageConstants;
 import org.familytree.exceptions.DependencyGraphException;
 import org.familytree.models.Node;
 import org.familytree.services.DependencyGraphService;
@@ -14,7 +14,7 @@ public class DependencyGraphServiceImpl implements DependencyGraphService {
   @Override
   public void addDependency(final Node parent, final Node child) {
     if (isCyclicDependency(parent, child)) {
-      throw new DependencyGraphException(ExceptionMessage.CYCLIC_DEPENDENCY);
+      throw new DependencyGraphException(ExceptionMessageConstants.CYCLIC_DEPENDENCY);
     }
     parent.getChildren().add(child);
     child.getParents().add(parent);
@@ -28,7 +28,7 @@ public class DependencyGraphServiceImpl implements DependencyGraphService {
   @Override
   public void deleteDependency(final Node parent, final Node child) {
     if (!isParentChildRelationShip(parent, child)) {
-      throw new DependencyGraphException(ExceptionMessage.NO_DEPENDENCY);
+      throw new DependencyGraphException(ExceptionMessageConstants.NO_DEPENDENCY);
     }
     parent.getChildren().remove(child);
     child.getParents().remove(parent);

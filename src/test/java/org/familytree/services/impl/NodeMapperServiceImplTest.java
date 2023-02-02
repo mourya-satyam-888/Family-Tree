@@ -1,6 +1,6 @@
 package org.familytree.services.impl;
 
-import org.familytree.constants.ExceptionMessage;
+import org.familytree.constants.ExceptionMessageConstants;
 import org.familytree.exceptions.DependencyGraphException;
 import org.familytree.models.NodeMapper;
 import org.familytree.models.Node;
@@ -29,7 +29,7 @@ class NodeMapperServiceImplTest {
     Mockito.when(nodeMapper.isNodeIdPresent(Mockito.anyString())).thenReturn(true);
     Exception exception = assertThrows(DependencyGraphException.class,
         () -> nodeMapperService.addNode(node));
-    assertEquals(ExceptionMessage.NODE_PRESENT, exception.getMessage());
+    assertEquals(ExceptionMessageConstants.NODE_PRESENT, exception.getMessage());
     Mockito.verify(nodeMapper).isNodeIdPresent(Mockito.anyString());
   }
 
@@ -50,7 +50,7 @@ class NodeMapperServiceImplTest {
     Mockito.when(nodeMapper.isNodeIdPresent(Mockito.anyString())).thenReturn(false);
     Exception exception = assertThrows(DependencyGraphException.class,
         () -> nodeMapperService.deleteNode("node 1"));
-    assertEquals(ExceptionMessage.NODE_ABSENT, exception.getMessage());
+    assertEquals(ExceptionMessageConstants.NODE_ABSENT, exception.getMessage());
     Mockito.verify(nodeMapper).isNodeIdPresent(Mockito.anyString());
   }
 
@@ -71,7 +71,7 @@ class NodeMapperServiceImplTest {
     Mockito.when(nodeMapper.isNodeIdPresent(Mockito.anyString())).thenReturn(false);
     Exception exception = assertThrows(DependencyGraphException.class,
         () -> nodeMapperService.getNodeById("node 1"));
-    assertEquals(ExceptionMessage.NODE_ABSENT, exception.getMessage());
+    assertEquals(ExceptionMessageConstants.NODE_ABSENT, exception.getMessage());
     Mockito.verify(nodeMapper).isNodeIdPresent(Mockito.anyString());
   }
 

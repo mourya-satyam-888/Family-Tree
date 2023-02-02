@@ -115,7 +115,7 @@ public class ApplicationController {
   public Set<Node> getAncestors(final String childId) {
     return dependencyGraphService.getAncestors(nodeMapperService.getNodeById(childId));
   }
-
+  
   /**
    * Gets descendants.
    *

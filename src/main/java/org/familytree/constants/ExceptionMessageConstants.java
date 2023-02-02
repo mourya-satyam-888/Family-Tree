@@ -3,7 +3,7 @@ package org.familytree.constants;
 /**
  * The type Exception message.
  */
-public class ExceptionMessage {
+public class ExceptionMessageConstants {
   /**
    * The constant EMPTY_NAME.
    */

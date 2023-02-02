@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.familytree.constants.ExceptionMessage;
+import org.familytree.constants.ExceptionMessageConstants;
 import org.familytree.exceptions.DependencyGraphException;
 import org.familytree.exceptions.ValidationException;
 import org.familytree.models.Node;
@@ -53,10 +53,10 @@ class ApplicationControllerTest {
   void addNewNodeWhenNameEmpty() {
     Mockito.when(nodeService.validateAndCreateNode(Mockito.anyString(),
             Mockito.anyString(), Mockito.anyMap()))
-        .thenThrow(new ValidationException(ExceptionMessage.EMPTY_NAME));
+        .thenThrow(new ValidationException(ExceptionMessageConstants.EMPTY_NAME));
     Exception exception = assertThrows(ValidationException.class, () ->
         applicationController.addNewNode("node 1", "", new HashMap<>()));
-    assertEquals(ExceptionMessage.EMPTY_NAME, exception.getMessage());
+    assertEquals(ExceptionMessageConstants.EMPTY_NAME, exception.getMessage());
     Mockito.verify(nodeService).validateAndCreateNode(Mockito.anyString(),
         Mockito.anyString(), Mockito.anyMap());
   }
@@ -65,10 +65,10 @@ class ApplicationControllerTest {
   void addNewNodeWhenIdEmpty() {
     Mockito.when(nodeService.validateAndCreateNode(Mockito.anyString(),
             Mockito.anyString(), Mockito.anyMap()))
-        .thenThrow(new ValidationException(ExceptionMessage.EMPTY_ID));
+        .thenThrow(new ValidationException(ExceptionMessageConstants.EMPTY_ID));
     Exception exception = assertThrows(ValidationException.class, () ->
         applicationController.addNewNode("", "name", new HashMap<>()));
-    assertEquals(ExceptionMessage.EMPTY_ID, exception.getMessage());
+    assertEquals(ExceptionMessageConstants.EMPTY_ID, exception.getMessage());
     Mockito.verify(nodeService).validateAndCreateNode(Mockito.anyString(),
         Mockito.anyString(), Mockito.anyMap());
   }
@@ -77,11 +77,11 @@ class ApplicationControllerTest {
   void addNewNodeWhenPresent() {
     Mockito.when(nodeService.validateAndCreateNode(Mockito.anyString(),
         Mockito.anyString(), Mockito.anyMap())).thenReturn(Node.builder().build());
-    Mockito.doThrow(new DependencyGraphException(ExceptionMessage.NODE_PRESENT))
+    Mockito.doThrow(new DependencyGraphException(ExceptionMessageConstants.NODE_PRESENT))
         .when(nodeMapperService).addNode(Mockito.any());
     Exception exception = assertThrows(DependencyGraphException.class, () ->
         applicationController.addNewNode("node 1", "", new HashMap<>()));
-    assertEquals(ExceptionMessage.NODE_PRESENT, exception.getMessage());
+    assertEquals(ExceptionMessageConstants.NODE_PRESENT, exception.getMessage());
     Mockito.verify(nodeService).validateAndCreateNode(Mockito.anyString(),
         Mockito.anyString(), Mockito.anyMap());
     Mockito.verify(nodeMapperService).addNode(Mockito.any());
@@ -102,10 +102,10 @@ class ApplicationControllerTest {
   @Test
   void deleteNodeWhenAbsent() {
     Mockito.when(nodeMapperService.getNodeById(Mockito.anyString())).thenThrow(
-        new DependencyGraphException(ExceptionMessage.NODE_ABSENT));
+        new DependencyGraphException(ExceptionMessageConstants.NODE_ABSENT));
     Exception exception = assertThrows(DependencyGraphException.class,
         () -> applicationController.deleteNode("node 1"));
-    assertEquals(ExceptionMessage.NODE_ABSENT, exception.getMessage());
+    assertEquals(ExceptionMessageConstants.NODE_ABSENT, exception.getMessage());
   }
 
   @Test
@@ -128,11 +128,11 @@ class ApplicationControllerTest {
   void addNewDependencyWhenCyclic() {
     Mockito.when(nodeMapperService.getNodeById(Mockito.anyString()))
         .thenReturn(Node.builder().build());
-    Mockito.doThrow(new DependencyGraphException(ExceptionMessage.CYCLIC_DEPENDENCY))
+    Mockito.doThrow(new DependencyGraphException(ExceptionMessageConstants.CYCLIC_DEPENDENCY))
         .when(dependencyGraphService).addDependency(Mockito.any(), Mockito.any());
     Exception exception = assertThrows(DependencyGraphException.class, () ->
         applicationController.addDependency("node 1", "node 2"));
-    assertEquals(ExceptionMessage.CYCLIC_DEPENDENCY, exception.getMessage());
+    assertEquals(ExceptionMessageConstants.CYCLIC_DEPENDENCY, exception.getMessage());
     Mockito.verify(nodeMapperService, Mockito.times(2)).getNodeById(Mockito.anyString());
     Mockito.verify(dependencyGraphService).addDependency(Mockito.any(), Mockito.any());
   }
@@ -155,11 +155,11 @@ class ApplicationControllerTest {
   void deleteDependencyWhenAbsent() {
     Mockito.when(nodeMapperService.getNodeById(Mockito.anyString()))
         .thenReturn(Node.builder().build());
-    Mockito.doThrow(new DependencyGraphException(ExceptionMessage.NO_DEPENDENCY)).when(dependencyGraphService)
+    Mockito.doThrow(new DependencyGraphException(ExceptionMessageConstants.NO_DEPENDENCY)).when(dependencyGraphService)
         .deleteDependency(Mockito.any(), Mockito.any());
     Exception exception = assertThrows(DependencyGraphException.class, () ->
         applicationController.deleteDependency("node 1", "node 2"));
-    assertEquals(ExceptionMessage.NO_DEPENDENCY, exception.getMessage());
+    assertEquals(ExceptionMessageConstants.NO_DEPENDENCY, exception.getMessage());
     Mockito.verify(nodeMapperService, Mockito.times(2))
         .getNodeById(Mockito.anyString());
     Mockito.verify(dependencyGraphService).deleteDependency(Mockito.any(), Mockito.any());

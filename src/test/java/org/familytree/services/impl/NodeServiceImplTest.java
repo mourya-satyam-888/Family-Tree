@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.familytree.constants.ExceptionMessage;
+import org.familytree.constants.ExceptionMessageConstants;
 import org.familytree.exceptions.ValidationException;
 import org.familytree.models.Node;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,7 +59,7 @@ class NodeServiceImplTest {
   void validateNodeWhenNameEmpty() {
     Exception exception = assertThrows(ValidationException.class, () ->
         nodeService.validateAndCreateNode("Id1", "", new HashMap<>()));
-    assertEquals(ExceptionMessage.EMPTY_NAME, exception.getMessage());
+    assertEquals(ExceptionMessageConstants.EMPTY_NAME, exception.getMessage());
   }
 
   /**
@@ -69,7 +69,7 @@ class NodeServiceImplTest {
   void validateNodeWhenIdEmpty() {
     Exception exception = assertThrows(ValidationException.class, () ->
         nodeService.validateAndCreateNode("", "name 1", new HashMap<>()));
-    assertEquals(ExceptionMessage.EMPTY_ID, exception.getMessage());
+    assertEquals(ExceptionMessageConstants.EMPTY_ID, exception.getMessage());
   }
 
   /**

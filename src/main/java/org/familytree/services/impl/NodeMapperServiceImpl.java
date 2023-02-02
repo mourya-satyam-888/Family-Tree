@@ -1,6 +1,6 @@
 package org.familytree.services.impl;
 
-import org.familytree.constants.ExceptionMessage;
+import org.familytree.constants.ExceptionMessageConstants;
 import org.familytree.exceptions.DependencyGraphException;
 import org.familytree.models.Node;
 import org.familytree.models.NodeMapper;
@@ -27,7 +27,7 @@ public class NodeMapperServiceImpl implements NodeMapperService {
   @Override
   public void addNode(final Node node) {
     if (isNodeIdPresent(node.getNodeId())) {
-      throw new DependencyGraphException(ExceptionMessage.NODE_PRESENT);
+      throw new DependencyGraphException(ExceptionMessageConstants.NODE_PRESENT);
     }
     nodeMapper.addNode(node);
   }
@@ -40,7 +40,7 @@ public class NodeMapperServiceImpl implements NodeMapperService {
   @Override
   public void deleteNode(final String nodeId) {
     if (!isNodeIdPresent(nodeId)) {
-      throw new DependencyGraphException(ExceptionMessage.NODE_ABSENT);
+      throw new DependencyGraphException(ExceptionMessageConstants.NODE_ABSENT);
     }
     nodeMapper.deleteNode(nodeId);
   }
@@ -48,7 +48,7 @@ public class NodeMapperServiceImpl implements NodeMapperService {
   @Override
   public Node getNodeById(final String nodeId) {
     if (!isNodeIdPresent(nodeId)) {
-      throw new DependencyGraphException(ExceptionMessage.NODE_ABSENT);
+      throw new DependencyGraphException(ExceptionMessageConstants.NODE_ABSENT);
     }
     return nodeMapper.getNodeById(nodeId);
   }
