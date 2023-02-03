@@ -3,6 +3,7 @@ package org.familytree.views;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Set;
+import lombok.extern.log4j.Log4j2;
 import org.familytree.controllers.ApplicationController;
 import org.familytree.models.Node;
 import org.familytree.models.NodeMapper;
@@ -13,6 +14,7 @@ import org.familytree.services.impl.NodeServiceImpl;
 /**
  * The type Application.
  */
+@Log4j2
 public class Application {
   /**
    * The Application controller.
@@ -46,7 +48,7 @@ public class Application {
    * Show menu.
    */
   private void showMenu() {
-    System.out.println(
+    log.info(
         "Select one of the 9 options available by entering number\n"
             + "1. Add new Node to graph\n"
             + "2. Delete Node from graph\n"
@@ -95,7 +97,7 @@ public class Application {
           terminate();
           break;
         default:
-          System.out.println("select correct option");
+          log.info("select correct option");
           selectOption();
           break;
       }
@@ -108,102 +110,102 @@ public class Application {
    * Add new node.
    */
   private void addNewNode() {
-    System.out.println("Please enter the id of node:");
+    log.info("Please enter the id of node:");
     final String nodeId = scanner.nextLine().strip();
-    System.out.println("Please enter the Name of node:");
+    log.info("Please enter the Name of node:");
     final String nodeName = scanner.nextLine().strip();
-    System.out.println("Do you want to enter additional details?(y/n)");
+    log.info("Do you want to enter additional details?(y/n)");
     String choice = scanner.nextLine().strip();
     final HashMap<String, String> additionalInfo = new HashMap<>();
     while ("y".equals(choice)) {
-      System.out.println("Enter key:");
+      log.info("Enter key:");
       final String key = scanner.nextLine().strip();
-      System.out.println("Enter value:");
+      log.info("Enter value:");
       final String value = scanner.nextLine().strip();
       additionalInfo.put(key, value);
-      System.out.println("Do you want to enter more additional details?(y/n)");
+      log.info("Do you want to enter more additional details?(y/n)");
       choice = scanner.nextLine().strip();
     }
     applicationController.addNewNode(nodeId, nodeName, additionalInfo);
-    System.out.println("Node Added Successfully.");
+    log.info("Node Added Successfully.");
   }
 
   /**
    * Delete node.
    */
   private void deleteNode() {
-    System.out.println("Enter Id of Node to be deleted:");
+    log.info("Enter Id of Node to be deleted:");
     final String nodeId = scanner.nextLine().strip();
     applicationController.deleteNode(nodeId);
-    System.out.println("Node Deleted Successfully.");
+    log.info("Node Deleted Successfully.");
   }
 
   /**
    * Add new dependency.
    */
   private void addDependency() {
-    System.out.println("Enter Id of Parent:");
+    log.info("Enter Id of Parent:");
     final String parentId = scanner.nextLine().strip();
-    System.out.println("Enter Id of Child:");
+    log.info("Enter Id of Child:");
     final String childId = scanner.nextLine().strip();
     applicationController.addDependency(parentId, childId);
-    System.out.println("Dependency Added Successfully.");
+    log.info("Dependency Added Successfully.");
   }
 
   /**
    * Delete dependency.
    */
   private void deleteDependency() {
-    System.out.println("Enter Id of Parent:");
+    log.info("Enter Id of Parent:");
     final String parentId = scanner.nextLine().strip();
-    System.out.println("Enter Id of Child:");
+    log.info("Enter Id of Child:");
     final String childId = scanner.nextLine().strip();
     applicationController.deleteDependency(parentId, childId);
-    System.out.println("Dependency deleted Successfully.");
+    log.info("Dependency deleted Successfully.");
   }
 
   /**
    * Show immediate parents.
    */
   private void showImmediateParents() {
-    System.out.println("Enter Id of Node to find parents: ");
+    log.info("Enter Id of Node to find parents: ");
     final String nodeId = scanner.nextLine().strip();
     final Set<Node> parents = applicationController.getParents(nodeId);
-    System.out.println("The immediate parents are: ");
-    System.out.println(parents);
+    log.info("The immediate parents are: ");
+    log.info(parents);
   }
 
   /**
    * Show immediate children.
    */
   private void showImmediateChildren() {
-    System.out.println("Enter Id of Node to find children: ");
+    log.info("Enter Id of Node to find children: ");
     final String nodeId = scanner.nextLine().strip();
     final Set<Node> children = applicationController.getChildren(nodeId);
-    System.out.println("The immediate children are: ");
-    System.out.println(children);
+    log.info("The immediate children are: ");
+    log.info(children);
   }
 
   /**
    * Show ancestors.
    */
   private void showAncestors() {
-    System.out.println("Enter Id of Node to find ancestors: ");
+    log.info("Enter Id of Node to find ancestors: ");
     final String nodeId = scanner.nextLine().strip();
     final Set<Node> ancestors = applicationController.getAncestors(nodeId);
-    System.out.println("The ancestors of Node are: ");
-    System.out.println(ancestors);
+    log.info("The ancestors of Node are: ");
+    log.info(ancestors);
   }
 
   /**
    * Show descendants.
    */
   private void showDescendants() {
-    System.out.println("Enter Id of Node to find descendants: ");
+    log.info("Enter Id of Node to find descendants: ");
     final String nodeId = scanner.nextLine().strip();
     final Set<Node> descendants = applicationController.getDescendants(nodeId);
-    System.out.println("The descendant of Node are: ");
-    System.out.println(descendants);
+    log.info("The descendant of Node are: ");
+    log.info(descendants);
   }
 
   /**
@@ -219,7 +221,7 @@ public class Application {
    * @param error the error
    */
   private void showErrors(final String error) {
-    System.out.println("The following error occurred: ");
-    System.out.println(error);
+    log.error("The following error occurred: ");
+    log.error(error);
   }
 }

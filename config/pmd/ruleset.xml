@@ -12,7 +12,6 @@
         <exclude name="GuardLogStatement"/>
         <exclude name="PreserveStackTrace"/>
         <exclude name="AvoidReassigningParameters"/>
-        <exclude name="SystemPrintln"/>
     </rule>
 
     <rule ref="category/java/codestyle.xml">
