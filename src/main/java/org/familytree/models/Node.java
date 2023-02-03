@@ -29,7 +29,6 @@ public class Node {
   /**
    * The Node additional info.
    */
-  @ToString.Exclude
   private Map<String, String> nodeAdditionalInfo;
   /**
    * The Parents.
