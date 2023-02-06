@@ -37,7 +37,7 @@ public interface DependencyGraphService {
    * @param child  the child
    * @return the boolean
    */
-  Boolean isParentChildRelationShip(Node parent, Node child);
+  Boolean isParentChildRelationship(Node parent, Node child);
 
   /**
    * Is cyclic dependency boolean.

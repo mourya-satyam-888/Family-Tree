@@ -27,7 +27,7 @@ public class DependencyGraphServiceImpl implements DependencyGraphService {
 
   @Override
   public void deleteDependency(final Node parent, final Node child) {
-    if (!isParentChildRelationShip(parent, child)) {
+    if (!isParentChildRelationship(parent, child)) {
       throw new DependencyGraphException(ExceptionMessageConstants.NO_DEPENDENCY);
     }
     parent.getChildren().remove(child);
@@ -41,7 +41,7 @@ public class DependencyGraphServiceImpl implements DependencyGraphService {
   }
 
   @Override
-  public Boolean isParentChildRelationShip(final Node parent, final Node child) {
+  public Boolean isParentChildRelationship(final Node parent, final Node child) {
     return parent.getChildren().contains(child);
   }
 
